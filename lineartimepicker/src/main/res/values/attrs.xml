@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LinearTimePickerView">
+        <attr name="ltp_textColor" format="color"/>
+        <attr name="ltp_textBackgroundColor" format="color"/>
+        <attr name="ltp_lineColor" format="color"/>
+    </declare-styleable>
+</resources>
