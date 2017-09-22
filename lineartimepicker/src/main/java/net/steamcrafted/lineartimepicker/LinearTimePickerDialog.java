@@ -7,14 +7,15 @@ import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
-import android.util.TypedValue;
+
+import net.steamcrafted.lineartimepicker.view.LinearTimePickerView;
 
 /**
  * Created by Wannes2 on 30/09/2016.
  */
 public class LinearTimePickerDialog extends AlertDialog {
 
-    private static final int NO_COLOR_SET = -1;
+    private static final int NO_COLOR_SET = -0x1ffffff;
 
     private int mbgColor = NO_COLOR_SET;
     private int mTextColor = NO_COLOR_SET;
@@ -25,7 +26,7 @@ public class LinearTimePickerDialog extends AlertDialog {
     private CharSequence mNegativeText;
     private ButtonCallback mBtnCallback;
 
-    protected LinearTimePickerDialog(Context context, ButtonCallback btnCallback, int bgColor, int textColor, int lineColor, int textbgcolor, CharSequence positiveText, CharSequence negativeText) {
+    private LinearTimePickerDialog(Context context, ButtonCallback btnCallback, int bgColor, int textColor, int lineColor, int textbgcolor, CharSequence positiveText, CharSequence negativeText) {
         super(context);
 
         mBtnCallback = btnCallback;
@@ -88,9 +89,9 @@ public class LinearTimePickerDialog extends AlertDialog {
         if(mLineColor != NO_COLOR_SET)
             v.setLineColor(mLineColor);
         if(mTextColor != NO_COLOR_SET)
-            v.setTextColor(mTextColor);
+            v.setActiveLineColor(mTextColor);
         if(mTextBgColor != NO_COLOR_SET)
-            v.setTextBackgroundColor(mTextBgColor);
+            v.setHandleBackgroundColor(mTextBgColor);
 
         setButton(BUTTON_NEGATIVE, mNegativeText, new OnClickListener() {
             @Override
@@ -129,7 +130,11 @@ public class LinearTimePickerDialog extends AlertDialog {
             }
         };
 
-        public Builder(Context c){
+        public static Builder with(Context c){
+            return new Builder(c);
+        }
+
+        private Builder(Context c){
             mContext = c;
             mPositiveText = c.getString(android.R.string.ok);
             mNegativeText = c.getString(android.R.string.cancel);
