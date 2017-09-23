@@ -94,15 +94,6 @@ abstract class BaseLinearPickerDialog extends AlertDialog {
                 }
                 arr.recycle();
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mButtonColor == NO_COLOR_SET) {
-                TypedArray arr = themedContext.getTheme().obtainStyledAttributes(new int[]{android.R.attr.colorAccent});
-                if(arr.hasValue(0)){
-                    int color = arr.getColor(0, Color.TRANSPARENT);
-                    if(color != Color.TRANSPARENT)
-                        mButtonColor = color;
-                }
-                arr.recycle();
-            }
         }
 
         v.setBackgroundColor(mbgColor);
@@ -113,6 +104,11 @@ abstract class BaseLinearPickerDialog extends AlertDialog {
             v.setActiveLineColor(mTextColor);
         if(mTextBgColor != NO_COLOR_SET)
             v.setHandleBackgroundColor(mTextBgColor);
+        if(mButtonColor != NO_COLOR_SET){
+            PorterDuffColorFilter btnCf = new PorterDuffColorFilter(mButtonColor, PorterDuff.Mode.SRC_ATOP);
+            btnApply.getDrawable().mutate().setColorFilter(btnCf);
+            btnCancel.getDrawable().mutate().setColorFilter(btnCf);
+        }
 
 //        setButton(BUTTON_NEGATIVE, mNegativeText, new OnClickListener() {
 //            @Override

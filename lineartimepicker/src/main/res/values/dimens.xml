@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="ltp_dialog_chin_height">56dp</dimen>
     <dimen name="ltp_dialog_year_text_size">20sp</dimen>
 </resources>

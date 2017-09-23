@@ -49,13 +49,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.ltp_time).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LinearTimePickerDialog.Builder.with(MainActivity.this)
+                LinearTimePickerDialog dialog = LinearTimePickerDialog.Builder.with(MainActivity.this)
                         .setDialogBackgroundColor(foregroundDark)
                         .setPickerBackgroundColor(backgroundDark)
-//                        .setLineColor(Color.argb(64, 255, 255, 255))
+                        .setLineColor(Color.argb(64, 255, 255, 255))
                         .setTextColor(Color.WHITE)
                         .setShowTutorial(true)
-//                        .setTextBackgroundColor(Color.argb(16, 255, 255, 255))
+                        .setTextBackgroundColor(Color.argb(16, 255, 255, 255))
                         .setButtonCallback(new LinearTimePickerDialog.ButtonCallback() {
                             @Override
                             public void onPositive(DialogInterface dialog, int hour, int minutes) {
@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
 
                             }
                         })
-                        .build()
-                        .show();
+                        .build();
+                dialog.show();
             }
         });
         findViewById(R.id.ltp_date).setOnClickListener(new View.OnClickListener() {
