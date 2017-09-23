@@ -1,7 +1,6 @@
 # Material Icon Library
 
 Gorgeous Time and Date picker library inspired by the [Timely app](https://play.google.com/store/apps/details?id=ch.bitspin.timely)
-A library containing over 2000 material vector icons that can be easily used as Drawable, a standalone View or inside menu resource files. Tired of having to search for and generate png resources every time you want to test something? This library puts an end to that burden and makes swapping icons a breeze, check out the usage below and you'll see why.
 
 # Demo
 
@@ -16,6 +15,7 @@ A library containing over 2000 material vector icons that can be easily used as 
  - Customizable to fit your application design
  - Occlusion detection
  - 24 hour and AM/PM modes based on the device's time settings
+ - Public API you can use to create your own Linear Picker View
 
 # Usage
 
@@ -23,9 +23,21 @@ A library containing over 2000 material vector icons that can be easily used as 
 
 #### Gradle
 
+Add the repository
+
+```groovy
+repositories {
+    maven {
+        url  "https://dl.bintray.com/codecrafted/maven"
+    }
+}
+```
+
+Add the library dependency
+
 ```groovy
 dependencies {
-    compile 'net.steamcrafted:lineartimepicker:1.0.0'
+    compile 'net.codecrafted:lineartimepicker:1.0.0'
 }
 ```
 

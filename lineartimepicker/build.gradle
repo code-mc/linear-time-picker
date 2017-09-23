@@ -1,5 +1,11 @@
 apply plugin: 'com.android.library'
 
+ext {
+    PUBLISH_GROUP_ID = 'net.codecrafted'
+    PUBLISH_ARTIFACT_ID = 'lineartimepicker'
+    PUBLISH_VERSION = '1.0.0'
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
@@ -18,6 +24,4 @@ android {
     }
 }
 
-dependencies {
-
-}
+apply from: 'https://raw.githubusercontent.com/ArthurHub/release-android-library/master/android-release-aar.gradle'
