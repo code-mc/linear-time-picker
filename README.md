@@ -8,7 +8,7 @@ Gorgeous Time and Date picker library inspired by the [Timely app](https://play.
 
 # Stats
 
-<img align="right" width="224" height="385" src="/tutorial.gif?raw=true">
+<img align="right" width="224" height="322" src="/tutorial.gif?raw=true">
 
  - MinSdk 11
  - Unique and intuitive Time and Date pickers
