@@ -1,10 +1,10 @@
-# Material Icon Library
+# Linear Time Picker Library
 
 Gorgeous Time and Date picker library inspired by the [Timely app](https://play.google.com/store/apps/details?id=ch.bitspin.timely)
 
 # Demo
 
-![](https://i.imgur.com/HM1ofFK.gif)
+![](/demo.gif?raw=true)
 
 # Stats
 
