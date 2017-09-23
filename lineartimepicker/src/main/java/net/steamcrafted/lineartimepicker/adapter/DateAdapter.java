@@ -43,28 +43,38 @@ public class DateAdapter extends BaseTextAdapter {
     @Override
     protected String getLabelText(int index) {
         switch (index % 12){
-            case 0: return "Jan";
-            case 1: return "Feb";
-            case 2: return "Mar";
-            case 3: return "Apr";
-            case 4: return "May";
-            case 5: return "Jun";
-            case 6: return "Jul";
-            case 7: return "Aug";
-            case 8: return "Sep";
-            case 9: return "Oct";
-            case 10: return "Nov";
+            case 0: return "JAN";
+            case 1: return "FEB";
+            case 2: return "MAR";
+            case 3: return "APR";
+            case 4: return "MAY";
+            case 5: return "JUN";
+            case 6: return "JUL";
+            case 7: return "AUG";
+            case 8: return "SEP";
+            case 9: return "OCT";
+            case 10: return "NOV";
             case 11:
-            default: return "Dec";
+            default: return "DEC";
         }
     }
 
     @Override
     protected String getHandleText(int index, int step) {
-        int month = index / (getSmallPipCount()+1);
-        int days = getDaysInMonth(month);
-        int offset = Math.min((index % (getSmallPipCount()+1) * 8 + step + 1), days);
-        return getLabelText(month) + " " + offset;
+        return getLabelText(getMonthIndex(index)) + " " + getDay(index, step);
+    }
+
+    private int getMonthIndex(int index){
+        return index / (getSmallPipCount()+1);
+    }
+
+    public int getMonth(int index){
+        return getMonthIndex(index) + 1;
+    }
+
+    public int getDay(int index, int step){
+        int days = getDaysInMonth(getMonthIndex(index));
+        return Math.min((index % (getSmallPipCount()+1) * 8 + step + 1), days);
     }
 
     private int getDaysInMonth(int month) {

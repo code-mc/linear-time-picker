@@ -7,13 +7,18 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import net.steamcrafted.lineartimepicker.adapter.LinearPickerAdapter;
 import net.steamcrafted.lineartimepicker.Utils;
+import net.steamcrafted.lineartimepicker.svg.SvgHand;
 
 /**
  * Created by Wannes2 on 28/09/2016.
@@ -58,6 +63,8 @@ public class LinearPickerView extends View {
     private int mHandleOffset;
     private LinearPickerAdapter.ScreenHalf mOccluded = LinearPickerAdapter.ScreenHalf.NONE;
     private long mOccludedChanged = 0;
+    private String mTapAbove = "";
+    private String mTapBelow = "";
 
     private LinearPickerAdapter mAdapter = new LinearPickerAdapter() {
         @Override
@@ -110,9 +117,9 @@ public class LinearPickerView extends View {
     }
 
     private void init(AttributeSet attrs){
-        int textBgColor = Color.argb(130, 200, 200, 200);
+        int textBgColor = Color.argb(16, 255, 255, 255);
         int textColor = Color.WHITE;
-        int lineColor = Color.argb(130, 200, 200, 200);
+        int lineColor = Color.argb(64, 255, 255, 255);
 
         mTextBoundsHeight  = dpToPx(TEXTBOUND_HEIGHT_DP);
         mTextBoundsPadding = dpToPx(TEXTBOUND_PADDING_DP);
@@ -168,6 +175,36 @@ public class LinearPickerView extends View {
     public void setActiveLineColor(int color){
         mTextTextPaint.setColor(color);
         postInvalidate();
+    }
+
+    public void setTutorialText(String tapAbove, String tapBelow){
+        mTapAbove = tapAbove;
+        mTapBelow = tapBelow;
+    }
+
+    public void showTutorial(){
+        startTutorialSlide();
+        mTutorialSlideProgress.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                startTutorialTap();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
     }
 
     public int getIndex(){
@@ -363,8 +400,177 @@ public class LinearPickerView extends View {
                 mTimetextBounds.right, mTimetextBounds.bottom - offset
         );
 
+        drawTutorialTap(canvas);
+        drawTutorialSlide(canvas);
+
         // user is interacting with view, continuously update the view for animations inside the handler
         if(mOccludedChanged + 1000 > System.currentTimeMillis()){
+            postInvalidate();
+        }
+    }
+
+    private ValueAnimator mTutorialTapProgress = ValueAnimator.ofFloat(0, 1);
+    private ValueAnimator mTutorialSlideProgress = ValueAnimator.ofFloat(0, 1);
+
+    private void startTutorialTap(){
+        mTutorialTapProgress.setDuration(4000);
+        mTutorialTapProgress.setInterpolator(new LinearInterpolator());
+        mTutorialTapProgress.setCurrentPlayTime(0);
+        mTutorialTapProgress.start();
+    }
+
+    private void drawTutorialTap(Canvas canvas) {
+        if(mTutorialTapProgress.isRunning()){
+            float section_frac_size = 1f / 6f;
+            float frac = (float) mTutorialTapProgress.getAnimatedValue();
+
+            float scaleFrac = Math.min(section_frac_size, frac) / section_frac_size;
+            float circleFrac = Math.max(0, Math.min(section_frac_size * 1.5f, frac) - section_frac_size * .5f) / section_frac_size;
+            float translateFrac = Math.max(0, Math.min(section_frac_size * 2.5f, frac) - section_frac_size * 1.5f) / section_frac_size;
+
+            if(frac >= section_frac_size * 3f){
+                scaleFrac = Math.max(0, Math.min(section_frac_size * 4f, frac) - section_frac_size * 3f) / section_frac_size;
+                circleFrac = Math.max(0, Math.min(section_frac_size * 4.5f, frac) - section_frac_size * 3.5f) / section_frac_size;
+            }
+
+            if(frac >= section_frac_size * 4.5f){
+                translateFrac = 1f - Math.max(0, Math.min(section_frac_size * 5.5f, frac) - section_frac_size * 4.5f) / section_frac_size;
+            }
+
+            translateFrac = accelDecel.getInterpolation(translateFrac);
+
+            SvgHand.setColorTint(Color.WHITE);
+            int handSize = (int) ((canvas.getWidth() / 4) / .8);
+            int handX = canvas.getWidth() / 2;
+//        int handYOffset =
+            int handYBottom = canvas.getHeight() / 2 + (canvas.getHeight()/2 - handSize)/2;
+            int handYTop = (canvas.getHeight()/2 - handSize)/2;
+            int handY = (int) (translateFrac * handYTop + (1f-translateFrac) * handYBottom);
+            float circleX = handX + handSize * 0.1f, circleY = handY + handSize*.12f;
+            Paint handpaint = new Paint();
+            handpaint.setAntiAlias(true);
+            handpaint.setColor(Color.WHITE);
+            handpaint.setStyle(Paint.Style.STROKE);
+            handpaint.setStrokeWidth(2);
+
+            canvas.save();
+
+            float pAnim = Math.abs(scaleFrac - .5f);
+            float pCircle = (.5f - Math.abs(circleFrac - .5f)) * 2f;
+            canvas.scale(pAnim * .2f + .9f, pAnim * .2f + .9f, circleX, circleY);
+
+//        canvas.drawRect(handX, handY, handX + handSize, handY + handSize, mTextBgPaint);
+            handpaint.setAlpha((int) (255 * pCircle));
+            canvas.drawCircle(circleX, circleY, handSize * (.05f + (.1f * circleFrac)), handpaint);
+            SvgHand.draw(canvas, handSize, handSize, handX, handY);
+
+            canvas.restore();
+
+            int textAlphaCapt = mTextTextPaint.getAlpha();
+            String text = translateFrac < .5f ? mTapBelow : mTapAbove;
+            mTextTextPaint.getTextBounds(text, 0, text.length(), mRect);
+            mTextTextPaint.setAlpha((int) (255 * pCircle));
+
+            int textY = (int) (mTimetextBounds.top + (mTimetextBounds.height() + mRect.height()) / 2 + ((1f - translateFrac * 2) * mTimetextBounds.height()));
+            canvas.drawText(text, mTimetextBounds.centerX() - mRect.width() / 2, textY, mTextTextPaint);
+
+            handpaint.setAlpha(255);
+            mTextTextPaint.setAlpha(textAlphaCapt);
+
+            if(translateFrac < .5f && scaleFrac > .5f && scaleFrac < 1f){
+                mInvisibleStep = 1;
+                setBoundsForHour(24, mInvisibleStep, false);
+            }else if(translateFrac > .5f && scaleFrac > .5f && scaleFrac < 1f){
+                mInvisibleStep = 0;
+                setBoundsForHour(24, mInvisibleStep, false);
+            }
+
+            postInvalidate();
+        }
+    }
+
+    private Interpolator accelDecel = new AccelerateDecelerateInterpolator();
+    private int mAnimationStartTop;
+
+    private void startTutorialSlide(){
+        mTutorialSlideProgress.setDuration(6500);
+        mTutorialSlideProgress.setInterpolator(new LinearInterpolator());
+        mTutorialSlideProgress.setCurrentPlayTime(0);
+
+        postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mTutorialSlideProgress.start();
+                mInvisibleStep = 0;
+                setBoundsForHour(24, 0, false);
+                mAnimationStartTop = mTimetextBounds.top;
+            }
+        }, 1);
+    }
+
+    private void drawTutorialSlide(Canvas canvas) {
+        if(mTutorialSlideProgress.isRunning()){
+            float section_frac_size = 1f / 10f;
+            float frac = (float) mTutorialSlideProgress.getAnimatedValue();
+
+            float translateFrac = accelDecel.getInterpolation(Math.max(0, Math.min(section_frac_size * 1f, frac) - section_frac_size * 0f) / section_frac_size) * .32f;
+            float scaleFrac = Math.max(0, Math.min(section_frac_size * 2f, frac) - section_frac_size * 1.5f) / section_frac_size;
+            float circleFrac = Math.max(0, Math.min(section_frac_size * 2.5f, frac) - section_frac_size * 2f) / section_frac_size;
+
+            if(frac >= section_frac_size * 3f){
+                mDragmode = DragMode.INSIDE;
+//            scaleFrac = Math.max(0, Math.min(section_frac_size * 4f, frac) - section_frac_size * 3f) / section_frac_size;
+//            circleFrac = Math.max(0, Math.min(section_frac_size * 4.5f, frac) - section_frac_size * 3.5f) / section_frac_size;
+                float translateFrac1 = Math.max(0, Math.min(section_frac_size * 4f, frac) - section_frac_size * 3f) / section_frac_size;
+                float translateFrac2 = Math.max(0, Math.min(section_frac_size * 6f, frac) - section_frac_size * 4f) / section_frac_size * .5f;
+                float translateFrac3 = Math.max(0, Math.min(section_frac_size * 7f, frac) - section_frac_size * 6f) / section_frac_size;
+                translateFrac =  accelDecel.getInterpolation(translateFrac1) *.5f + .32f - accelDecel.getInterpolation(translateFrac2) + accelDecel.getInterpolation(translateFrac3) * .5f;
+            }
+
+            if(frac >= section_frac_size * 6.5){
+                circleFrac = Math.max(0, Math.min(section_frac_size * 7f, frac) - section_frac_size * 6.5f) / section_frac_size + .5f;
+            }
+
+            if(frac >= section_frac_size * 7.5f){
+                mDragmode = DragMode.UP;
+                translateFrac = .32f - accelDecel.getInterpolation(Math.max(0, Math.min(section_frac_size * 9.5f, frac) - section_frac_size * 8.5f) / section_frac_size) * .32f;
+                scaleFrac = Math.max(0, Math.min(section_frac_size * 8f, frac) - section_frac_size * 7.5f) / section_frac_size + .5f;
+            }
+
+            SvgHand.setColorTint(Color.WHITE);
+            int handSize = (int) ((canvas.getWidth() / 4) / .8);
+            int handX = canvas.getWidth() / 2;
+//        int handYOffset =
+            int handYBottom = canvas.getHeight() / 2 + (canvas.getHeight()/2 - handSize)/2;
+            int handYTop = (canvas.getHeight()/2 - handSize)/2;
+            int handY = (int) (translateFrac * handYTop + (1f-translateFrac) * handYBottom);
+            float circleX = handX + handSize * 0.1f, circleY = handY + handSize*.12f;
+            Paint handpaint = new Paint();
+            handpaint.setAntiAlias(true);
+            handpaint.setColor(Color.WHITE);
+            handpaint.setStyle(Paint.Style.STROKE);
+            handpaint.setStrokeWidth(2);
+
+            if(mDragmode == DragMode.INSIDE){
+                int timePosY = (handY - (int) (.32f * handYTop + (1f - .32f) * handYBottom)) + mAnimationStartTop;
+                mTimetextBounds.set(mTimetextBounds.left,timePosY, mTimetextBounds.right, timePosY + mTextBoundsHeight);
+            }
+
+            canvas.save();
+
+            float pAnim = Math.abs(scaleFrac - .5f);
+            float pCircle = (.5f - Math.abs(circleFrac - .5f)) * 2f;
+            canvas.scale(pAnim * .2f + .9f, pAnim * .2f + .9f, circleX, circleY);
+
+//        canvas.drawRect(handX, handY, handX + handSize, handY + handSize, mTextBgPaint);
+            handpaint.setAlpha((int) (255 * pCircle));
+            canvas.drawCircle(circleX, circleY, handSize * (.05f + (.1f * circleFrac)), handpaint);
+            SvgHand.draw(canvas, handSize, handSize, handX, handY);
+
+            canvas.restore();
+
+            handpaint.setAlpha(255);
+
             postInvalidate();
         }
     }
@@ -414,7 +620,7 @@ public class LinearPickerView extends View {
                     mOccludedChanged = System.currentTimeMillis();
                 }
             }
-            else if(mOutsideDragEnabled){
+            else{
                 mDragmode = DragMode.OUTSIDE;
             }
 
@@ -443,7 +649,7 @@ public class LinearPickerView extends View {
             else if(mDragmode == DragMode.OUTSIDE && distance > 50){
                 mValidClick = false;
 
-                if(distance > 100 && !mAnimating){
+                if(distance > 100 && !mAnimating && mOutsideDragEnabled){
                     mDragOffsetY = mTimetextBounds.height()/2;
                     mDragmode = DragMode.INSIDE;
                     mAnimating = true;

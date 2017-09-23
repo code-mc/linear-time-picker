@@ -31,7 +31,9 @@ public class LinearTimePickerView extends LinearPickerView {
     }
 
     private void init(AttributeSet attrs){
+        mTextPaint.setAntiAlias(true);
         setAdapter(new TimeAdapter(getContext(), mTextPaint));
+        setTutorialText("-5 minutes", "+5 minutes");
     }
 
     public int getHour(){

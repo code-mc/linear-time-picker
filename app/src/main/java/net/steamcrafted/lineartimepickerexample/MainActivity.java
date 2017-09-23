@@ -9,10 +9,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import net.steamcrafted.lineartimepicker.LinearTimePickerDialog;
 import net.steamcrafted.lineartimepicker.adapter.DateAdapter;
 import net.steamcrafted.lineartimepicker.adapter.LinearPickerAdapter;
 import net.steamcrafted.lineartimepicker.adapter.TimeAdapter;
+import net.steamcrafted.lineartimepicker.dialog.LinearDatePickerDialog;
+import net.steamcrafted.lineartimepicker.dialog.LinearTimePickerDialog;
 import net.steamcrafted.lineartimepicker.view.LinearPickerView;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,14 +22,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final int backgroundDark = ResourcesCompat.getColor(getResources(), R.color.background_dark, getTheme());
+        final int foregroundDark = ResourcesCompat.getColor(getResources(), R.color.foreground_dark, getTheme());
+        final int colorAccent = ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme());
+
         findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LinearTimePickerDialog.Builder.with(MainActivity.this)
-                        .setBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, getTheme()))
-                        .setLineColor(Color.GRAY)
+                        .setDialogBackgroundColor(foregroundDark)
+                        .setPickerBackgroundColor(backgroundDark)
+//                        .setLineColor(Color.argb(64, 255, 255, 255))
                         .setTextColor(Color.WHITE)
-                        .setTextBackgroundColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimaryDark, getTheme()))
+                        .setShowTutorial(true)
+//                        .setTextBackgroundColor(Color.argb(16, 255, 255, 255))
                         .setButtonCallback(new LinearTimePickerDialog.ButtonCallback() {
                             @Override
                             public void onPositive(DialogInterface dialog, int hour, int minutes) {
@@ -42,6 +49,30 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .build()
                         .show();
+
+//                LinearDatePickerDialog.Builder.with(MainActivity.this)
+//                        .setDialogBackgroundColor(foregroundDark)
+//                        .setPickerBackgroundColor(backgroundDark)
+////                        .setLineColor(Color.argb(64, 255, 255, 255))
+//                        .setTextColor(Color.WHITE)
+////                        .setTextBackgroundColor(Color.argb(16, 255, 255, 255))
+//                        .setYear(2017)
+//                        .setMinYear(2000)
+//                        .setMaxYear(2030)
+//                        .setShowTutorial(true)
+//                        .setButtonCallback(new LinearDatePickerDialog.ButtonCallback() {
+//                            @Override
+//                            public void onPositive(DialogInterface dialog, int year, int month, int day) {
+//                                Toast.makeText(MainActivity.this, "" + year + "-" + month + "-" + day, Toast.LENGTH_SHORT).show();
+//                            }
+//
+//                            @Override
+//                            public void onNegative(DialogInterface dialog) {
+//
+//                            }
+//                        })
+//                        .build()
+//                        .show();
             }
         });
         LinearPickerView v = new LinearPickerView(this);
