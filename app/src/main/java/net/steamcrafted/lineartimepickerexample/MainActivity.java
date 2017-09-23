@@ -26,7 +26,27 @@ public class MainActivity extends AppCompatActivity {
         final int foregroundDark = ResourcesCompat.getColor(getResources(), R.color.foreground_dark, getTheme());
         final int colorAccent = ResourcesCompat.getColor(getResources(), R.color.colorAccent, getTheme());
 
-        findViewById(android.R.id.content).setOnClickListener(new View.OnClickListener() {
+        LinearPickerView v = new LinearPickerView(this);
+        Paint textPaint = new Paint();
+        textPaint.setColor(Color.WHITE);
+
+        LinearPickerAdapter dateAdap = new DateAdapter(this, textPaint);
+        LinearPickerAdapter timeAdap = new TimeAdapter(this, textPaint);
+        LinearPickerAdapter colorAdap = new ColorAdapter(this, textPaint);
+        LinearPickerAdapter graColorAdap = new GradientColorAdapter(this, textPaint);
+        v.setAdapter(dateAdap);
+
+//        setContentView(v);
+
+        v.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+        v.setLineColor(Color.GRAY);
+        v.setActiveLineColor(Color.WHITE);
+        v.setHandleBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+//        v.setHandleBackgroundColor(Color.TRANSPARENT);
+
+        setContentView(R.layout.activity_main);
+
+        findViewById(R.id.ltp_time).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 LinearTimePickerDialog.Builder.with(MainActivity.this)
@@ -49,50 +69,35 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .build()
                         .show();
-
-//                LinearDatePickerDialog.Builder.with(MainActivity.this)
-//                        .setDialogBackgroundColor(foregroundDark)
-//                        .setPickerBackgroundColor(backgroundDark)
-////                        .setLineColor(Color.argb(64, 255, 255, 255))
-//                        .setTextColor(Color.WHITE)
-////                        .setTextBackgroundColor(Color.argb(16, 255, 255, 255))
-//                        .setYear(2017)
-//                        .setMinYear(2000)
-//                        .setMaxYear(2030)
-//                        .setShowTutorial(true)
-//                        .setButtonCallback(new LinearDatePickerDialog.ButtonCallback() {
-//                            @Override
-//                            public void onPositive(DialogInterface dialog, int year, int month, int day) {
-//                                Toast.makeText(MainActivity.this, "" + year + "-" + month + "-" + day, Toast.LENGTH_SHORT).show();
-//                            }
-//
-//                            @Override
-//                            public void onNegative(DialogInterface dialog) {
-//
-//                            }
-//                        })
-//                        .build()
-//                        .show();
             }
         });
-        LinearPickerView v = new LinearPickerView(this);
-        Paint textPaint = new Paint();
-        textPaint.setColor(Color.WHITE);
+        findViewById(R.id.ltp_date).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LinearDatePickerDialog.Builder.with(MainActivity.this)
+                        .setDialogBackgroundColor(foregroundDark)
+                        .setPickerBackgroundColor(backgroundDark)
+//                        .setLineColor(Color.argb(64, 255, 255, 255))
+                        .setTextColor(Color.WHITE)
+//                        .setTextBackgroundColor(Color.argb(16, 255, 255, 255))
+                        .setYear(2017)
+                        .setMinYear(2000)
+                        .setMaxYear(2030)
+                        .setShowTutorial(true)
+                        .setButtonCallback(new LinearDatePickerDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(DialogInterface dialog, int year, int month, int day) {
+                                Toast.makeText(MainActivity.this, "" + year + "-" + month + "-" + day, Toast.LENGTH_SHORT).show();
+                            }
 
-        LinearPickerAdapter dateAdap = new DateAdapter(this, textPaint);
-        LinearPickerAdapter timeAdap = new TimeAdapter(this, textPaint);
-        LinearPickerAdapter colorAdap = new ColorAdapter(this, textPaint);
-        LinearPickerAdapter graColorAdap = new GradientColorAdapter(this, textPaint);
-        v.setAdapter(dateAdap);
+                            @Override
+                            public void onNegative(DialogInterface dialog) {
 
-//        setContentView(v);
-
-        v.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        v.setLineColor(Color.GRAY);
-        v.setActiveLineColor(Color.WHITE);
-        v.setHandleBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
-//        v.setHandleBackgroundColor(Color.TRANSPARENT);
-
-        setContentView(R.layout.activity_main);
+                            }
+                        })
+                        .build()
+                        .show();
+            }
+        });
     }
 }

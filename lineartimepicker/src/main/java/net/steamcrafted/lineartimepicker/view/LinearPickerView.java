@@ -60,6 +60,7 @@ public class LinearPickerView extends View {
     private boolean mInitializePosition = false;
     private boolean mAnimating = false;
     private boolean mOutsideDragEnabled = false;
+    private boolean mTutorialPlaying = false;
     private int mHandleOffset;
     private LinearPickerAdapter.ScreenHalf mOccluded = LinearPickerAdapter.ScreenHalf.NONE;
     private long mOccludedChanged = 0;
@@ -183,6 +184,8 @@ public class LinearPickerView extends View {
     }
 
     public void showTutorial(){
+        mTutorialPlaying = true;
+
         startTutorialSlide();
         mTutorialSlideProgress.addListener(new Animator.AnimatorListener() {
             @Override
@@ -193,6 +196,27 @@ public class LinearPickerView extends View {
             @Override
             public void onAnimationEnd(Animator animation) {
                 startTutorialTap();
+                mTutorialTapProgress.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mTutorialPlaying = false;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        mTutorialPlaying = false;
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                });
             }
 
             @Override
@@ -413,7 +437,7 @@ public class LinearPickerView extends View {
     private ValueAnimator mTutorialSlideProgress = ValueAnimator.ofFloat(0, 1);
 
     private void startTutorialTap(){
-        mTutorialTapProgress.setDuration(4000);
+        mTutorialTapProgress.setDuration(3250);
         mTutorialTapProgress.setInterpolator(new LinearInterpolator());
         mTutorialTapProgress.setCurrentPlayTime(0);
         mTutorialTapProgress.start();
@@ -421,7 +445,7 @@ public class LinearPickerView extends View {
 
     private void drawTutorialTap(Canvas canvas) {
         if(mTutorialTapProgress.isRunning()){
-            float section_frac_size = 1f / 6f;
+            float section_frac_size = 1f / 5f;
             float frac = (float) mTutorialTapProgress.getAnimatedValue();
 
             float scaleFrac = Math.min(section_frac_size, frac) / section_frac_size;
@@ -431,10 +455,6 @@ public class LinearPickerView extends View {
             if(frac >= section_frac_size * 3f){
                 scaleFrac = Math.max(0, Math.min(section_frac_size * 4f, frac) - section_frac_size * 3f) / section_frac_size;
                 circleFrac = Math.max(0, Math.min(section_frac_size * 4.5f, frac) - section_frac_size * 3.5f) / section_frac_size;
-            }
-
-            if(frac >= section_frac_size * 4.5f){
-                translateFrac = 1f - Math.max(0, Math.min(section_frac_size * 5.5f, frac) - section_frac_size * 4.5f) / section_frac_size;
             }
 
             translateFrac = accelDecel.getInterpolation(translateFrac);
@@ -598,6 +618,8 @@ public class LinearPickerView extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if(mTutorialPlaying) return super.onTouchEvent(event);
+
         int ac  = event.getAction();
         float x = event.getX();
         float y = event.getY();
