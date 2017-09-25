@@ -25,18 +25,6 @@ Gorgeous Time and Date picker library inspired by the [Timely app](https://play.
 
 #### Gradle
 
-Add the repository
-
-```groovy
-repositories {
-    maven {
-        url  "https://dl.bintray.com/codecrafted/maven"
-    }
-}
-```
-
-Add the library dependency
-
 ```groovy
 dependencies {
     compile 'net.codecrafted:lineartimepicker:1.0.0'
